@@ -1,7 +1,8 @@
 import { range, shuffle } from 'lodash'
-import { useState } from 'react'
+import { useState, FC } from 'react'
 
-const getArr = () => shuffle(range(1,11))
+const SIZE = 30
+const getArr = () => shuffle(range(1,SIZE+1))
 
 const swap = (arr: number[], a: number, b: number) => {
   const tmp = arr[a]
@@ -22,6 +23,28 @@ const sort = (arr: number[]) => {
   }
 }
 
+interface IPropsBar {
+  value: number
+  idx: number
+}
+
+const Bar: FC<IPropsBar> = (props) => {
+  const { value, idx } = props
+  const style = { height: value * 10, transform: `translateX(${idx*22}px)` }
+  return (
+    <>
+      <div style={style} className='bar'/>
+      <style jsx>{`
+        .bar {
+          position: absolute;
+          width: 20px;
+          background-color: black;
+        }
+      `}</style>
+    </>
+  )
+}
+
 export default () => {
 
   const [arr, setArr] = useState(getArr())
@@ -39,8 +62,8 @@ export default () => {
     <div>
       <div className='board'>
 
-        {arr.join(',')}
-      
+        {arr.map((value, i)=> <Bar key={i} value={value} idx={i}/>)}
+
       </div>
 
       <div className='buttonBox'>
@@ -54,7 +77,7 @@ export default () => {
           height: 200px;
           background-color: green;
           color: white;
-          font-size: 40px;
+          transform: rotateX(180deg);
         }
         .buttonBox {
           width: 100%;
