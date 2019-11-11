@@ -5,15 +5,12 @@ import InsertionSort from '../components/InsertionSort'
 const Home = () => (
   <div>
     <Head>
-      <title>Home</title>
+      <title>Visualized Sort Algorithm</title>
       <link rel='icon' href='/favicon.ico' />
     </Head>
 
     <div className='hero'>
-      <h1 className='title'>Welcome to Next.js!</h1>
-      <p className='description'>
-        To get started, edit <code>pages/index.js</code> and save to reload.
-      </p>
+      <h1 className='title'>Visualized Sort Algorithm</h1>
       <InsertionSort/>
     </div>
 
