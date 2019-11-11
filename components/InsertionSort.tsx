@@ -1,10 +1,15 @@
 import { range, shuffle } from 'lodash'
+import { useState } from 'react'
 
 const getArr = () => shuffle(range(1,11))
 
 export default () => {
 
-  const arr = getArr()
+  const [arr, setArr] = useState(getArr())
+
+  const handleShuffle = () => {
+    setArr(getArr())
+  }
 
   return (
     <div>
@@ -15,7 +20,7 @@ export default () => {
       </div>
 
       <div className='buttonBox'>
-        <button>shuffle</button>
+        <button onClick={handleShuffle}>shuffle</button>
         <button>sort</button>
       </div>
 
