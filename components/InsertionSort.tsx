@@ -1,8 +1,17 @@
 import { range, shuffle } from 'lodash'
-import { useState, FC } from 'react'
+import { useState, FC, SetStateAction, Dispatch } from 'react'
 
+type TSetArr = Dispatch<SetStateAction<number[]>>
+type TSetIdx = Dispatch<SetStateAction<number>>
+type TSet = Dispatch<SetStateAction<any>>
+
+const DURATION = 20
 const SIZE = 30
+const BAR_WIDTH = 20
+const BAR_MARGIN = 2
+
 const getArr = () => shuffle(range(1,SIZE+1))
+const getX = (idx: number) => idx*(BAR_MARGIN+BAR_WIDTH)
 
 const swap = (arr: number[], a: number, b: number) => {
   const tmp = arr[a]
@@ -10,16 +19,25 @@ const swap = (arr: number[], a: number, b: number) => {
   arr[b] = tmp
 }
 
-const sort = (arr: number[]) => {
+const delaySet = (value: any, setArr: TSet) => new Promise((resolve) => {
+  setArr(value)
+  setTimeout(() => resolve(value), DURATION)
+})
+
+const sort = async (arr: number[], setArr: TSetArr, setIdxI: TSetIdx, setIdxJ: TSetIdx) => {
   // https://en.wikipedia.org/wiki/Insertion_sort
   let i = 1
   while (i < arr.length) {
     let j = i
+    await delaySet(j, setIdxJ)
     while (j > 0 && arr[j - 1] > arr[j]) {
       swap(arr, j, j - 1)
+      await delaySet([...arr], setArr)
       j = j - 1
+      await delaySet(j, setIdxJ)
     }
     i = i + 1
+    await delaySet(i, setIdxI)
   }
 }
 
@@ -30,7 +48,7 @@ interface IPropsBar {
 
 const Bar: FC<IPropsBar> = (props) => {
   const { value, idx } = props
-  const style = { height: value * 10, transform: `translateX(${idx*22}px)` }
+  const style = { height: value * 10, transform: `translateX(${getX(idx)}px)` }
   return (
     <>
       <div style={style} className='bar'/>
@@ -46,29 +64,34 @@ const Bar: FC<IPropsBar> = (props) => {
 }
 
 export default () => {
-
   const [arr, setArr] = useState(getArr())
+  const [idxI, setIdxI] = useState(1)
+  const [idxJ, setIdxJ] = useState(1)
+  const [isRunning, setIsRunning] = useState(false)
 
   const handleShuffle = () => {
     setArr(getArr())
+    setIdxI(1)
+    setIdxJ(1)
   }
-  const handleSort = () => {
-    const sortedArr = [...arr]
-    sort(sortedArr)
-    setArr(sortedArr)
+  const handleSort = async () => {
+    setIsRunning(true)
+    await sort(arr, setArr, setIdxI, setIdxJ)
+    setIsRunning(false)
   }
 
   return (
     <div>
       <div className='board'>
-
-        {arr.map((value, i)=> <Bar key={i} value={value} idx={i}/>)}
-
+        {arr.map((value, i) => <Bar key={i} value={value} idx={i}/>)}
       </div>
+      <div className='index i' style={{ transform: `translateX(${getX(idxI)}px)`}}>i</div>
+      <div className='index j' style={{ transform: `translateX(${getX(idxJ)}px)`}}>j</div>
 
       <div className='buttonBox'>
-        <button onClick={handleShuffle}>shuffle</button>
-        <button onClick={handleSort}>sort</button>
+        { !isRunning && <button onClick={handleShuffle}>shuffle</button>}
+        { !isRunning && <button onClick={handleSort}>sort</button>}
+        { isRunning && <div className='running'>Running...</div>}
       </div>
 
       <style jsx>{`
@@ -87,6 +110,22 @@ export default () => {
         }
         button {
           font-size: 40px;
+        }
+        .running {
+          font-size: 40px;
+        }
+        .index {
+          position: absolute;
+          width: 20px;
+          opacity: 0.8;
+        }
+        .index.j {
+          background-color: blue;
+          color: white;
+        }
+        .index.i {
+          background-color: yellow;
+          color: black;
         }
       `}</style>
 
