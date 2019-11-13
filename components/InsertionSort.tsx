@@ -1,11 +1,11 @@
 import { range, shuffle } from 'lodash'
-import { useState, FC, SetStateAction, Dispatch } from 'react'
+import { useState, FC, SetStateAction, Dispatch, memo } from 'react'
 
 type TSetArr = Dispatch<SetStateAction<number[]>>
 type TSetIdx = Dispatch<SetStateAction<number>>
 type TSet = Dispatch<SetStateAction<any>>
 
-const DURATION = 20
+const DURATION = 500
 const SIZE = 30
 const BAR_WIDTH = 20
 const BAR_MARGIN = 2
@@ -19,8 +19,8 @@ const swap = (arr: number[], a: number, b: number) => {
   arr[b] = tmp
 }
 
-const delaySet = (value: any, setArr: TSet) => new Promise((resolve) => {
-  setArr(value)
+const delaySet = (value: any, set: TSet) => new Promise((resolve) => {
+  set(value)
   setTimeout(() => resolve(value), DURATION)
 })
 
@@ -63,6 +63,37 @@ const Bar: FC<IPropsBar> = (props) => {
   )
 }
 
+interface IPropsBoard {
+  arr: number[]
+}
+
+const areArrEqual = (oldProps: IPropsBoard, props: IPropsBoard) => {
+  return oldProps.arr === props.arr
+}
+
+const Board: FC<IPropsBoard> = (props) => {
+  const { arr } = props
+  return (
+    <div className='board'>
+      {arr.map((value, i) => {
+        console.log('render Bar')
+        return <Bar key={i} value={value} idx={i} />
+      })}
+      <style jsx>{`
+        .board {
+          width: 100%;
+          height: 200px;
+          background-color: green;
+          color: white;
+          transform: rotateX(180deg);
+        }
+      `}</style>
+    </div>
+  )
+}
+
+const MemorizedBoard = memo(Board, areArrEqual)
+
 export default () => {
   const [arr, setArr] = useState(getArr())
   const [idxI, setIdxI] = useState(1)
@@ -82,9 +113,7 @@ export default () => {
 
   return (
     <div>
-      <div className='board'>
-        {arr.map((value, i) => <Bar key={i} value={value} idx={i}/>)}
-      </div>
+      <MemorizedBoard arr={arr}/>
       <div className='index i' style={{ transform: `translateX(${getX(idxI)}px)`}}>i</div>
       <div className='index j' style={{ transform: `translateX(${getX(idxJ)}px)`}}>j</div>
 
@@ -95,13 +124,6 @@ export default () => {
       </div>
 
       <style jsx>{`
-        .board {
-          width: 100%;
-          height: 200px;
-          background-color: green;
-          color: white;
-          transform: rotateX(180deg);
-        }
         .buttonBox {
           width: 100%;
           height: 60px;
