@@ -1,12 +1,11 @@
 import { range, shuffle } from 'lodash'
 import { useState, FC, SetStateAction, Dispatch, memo, useRef, MutableRefObject, useEffect } from 'react'
+import { tween } from 'tweening-js'
 
-type TSetArr = Dispatch<SetStateAction<number[]>>
 type TSetIdx = Dispatch<SetStateAction<number>>
 type TSetX = Dispatch<SetStateAction<number>>
-type TSet = Dispatch<SetStateAction<any>>
 
-const DURATION = 50
+const DURATION = 100
 const SIZE = 30
 const BAR_WIDTH = 20
 const BAR_MARGIN = 2
@@ -21,34 +20,29 @@ const swap = (arr: IExtendedBar[], a: number, b: number) => {
   arr[b] = tmp
 }
 
-const delaySet = (value: number, set: TSet) => new Promise((resolve) => {
-  set(value)
-  setTimeout(() => resolve(value), DURATION)
-})
-
 interface IExtendedBar {
   value: number
   refSetX: MutableRefObject<TSetX>
 }
 
-const sort = async (extendedBarArr: IExtendedBar[], setArr: TSetArr, setIdxI: TSetIdx, setIdxJ: TSetIdx) => {
+const sort = async (extendedBarArr: IExtendedBar[], setIdxI: TSetIdx, setIdxJ: TSetIdx) => {
   // https://en.wikipedia.org/wiki/Insertion_sort
-  let i = 1
+  let i = 1, j = 1
   while (i < extendedBarArr.length) {
-    let j = i
-    await delaySet(j, setIdxJ)
+    await tween(j, i, setIdxJ, DURATION).promise()
+    j = i
     while (j > 0 && extendedBarArr[j - 1].value > extendedBarArr[j].value) {
       await Promise.all([
-        delaySet(getX(j-1), extendedBarArr[j].refSetX.current),
-        delaySet(getX(j), extendedBarArr[j-1].refSetX.current),
+        tween(getX(j), getX(j-1), extendedBarArr[j].refSetX.current, DURATION).promise(),
+        tween(getX(j-1), getX(j), extendedBarArr[j-1].refSetX.current, DURATION).promise(),
       ])
       swap(extendedBarArr, j, j - 1)
 
+      await tween(j, j-1, setIdxJ, DURATION).promise()
       j = j - 1
-      await delaySet(j, setIdxJ)
     }
+    await tween(i, i+1, setIdxI, DURATION).promise()
     i = i + 1
-    await delaySet(i, setIdxI)
   }
 }
 
@@ -130,7 +124,7 @@ export default () => {
   }
   const handleSort = async () => {
     setIsRunning(true)
-    await sort(refExtendedBarArr.current, setArr, setIdxI, setIdxJ)
+    await sort(refExtendedBarArr.current, setIdxI, setIdxJ)
     setIsRunning(false)
   }
 
