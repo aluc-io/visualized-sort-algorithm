@@ -1,11 +1,11 @@
-import { range, shuffle } from 'lodash'
+import { range, shuffle, uniqueId } from 'lodash'
 import { useState, FC, SetStateAction, Dispatch, memo, useRef, MutableRefObject, useEffect } from 'react'
 import { tween } from 'tweening-js'
 
 type TSetIdx = Dispatch<SetStateAction<number>>
 type TSetX = Dispatch<SetStateAction<number>>
 
-const DURATION = 100
+const DURATION = 10
 const SIZE = 30
 const BAR_WIDTH = 20
 const BAR_MARGIN = 2
@@ -77,7 +77,7 @@ interface IPropsBoard {
   refExtendedBarArr: MutableRefObject<IExtendedBar[]>
 }
 
-const areArrEqual = (oldProps: IPropsBoard, props: IPropsBoard) => {
+const isArrEqual = (oldProps: IPropsBoard, props: IPropsBoard) => {
   return oldProps.arr === props.arr
 }
 
@@ -91,8 +91,7 @@ const Board: FC<IPropsBoard> = (props) => {
   return (
     <div className='board'>
       {extendedBarArr.map((item, i) => {
-        console.log('render Bar')
-        return <Bar key={i} value={item.value} idx={i} refSetX={item.refSetX}/>
+        return <Bar key={`${uniqueId('set')}:${i}`} value={item.value} idx={i} refSetX={item.refSetX}/>
       })}
       <style jsx>{`
         .board {
@@ -107,7 +106,7 @@ const Board: FC<IPropsBoard> = (props) => {
   )
 }
 
-const MemorizedBoard = memo(Board, areArrEqual)
+const MemorizedBoard = memo(Board, isArrEqual)
 
 export default () => {
   const [arr, setArr] = useState(initArr)
