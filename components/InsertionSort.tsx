@@ -7,7 +7,7 @@ type TSetIdx = Dispatch<SetStateAction<number>>
 type TSetX = Dispatch<SetStateAction<number>>
 
 const DURATION = 50
-const SIZE = 20
+const SIZE = 15
 const BAR_WIDTH = 20
 const BAR_MARGIN = 2
 
