@@ -1,12 +1,13 @@
 import { range, shuffle, uniqueId } from 'lodash'
 import { useState, FC, SetStateAction, Dispatch, memo, useRef, MutableRefObject, useEffect } from 'react'
 import { tween } from 'tweening-js'
+import browserBeep from 'browser-beep'
 
 type TSetIdx = Dispatch<SetStateAction<number>>
 type TSetX = Dispatch<SetStateAction<number>>
 
-const DURATION = 10
-const SIZE = 30
+const DURATION = 50
+const SIZE = 20
 const BAR_WIDTH = 20
 const BAR_MARGIN = 2
 
@@ -26,12 +27,16 @@ interface IExtendedBar {
 }
 
 const sort = async (extendedBarArr: IExtendedBar[], setIdxI: TSetIdx, setIdxJ: TSetIdx) => {
+  const beepA = browserBeep({ frequency: 830 })
+  const beepB = browserBeep({ frequency: 230 })
+
   // https://en.wikipedia.org/wiki/Insertion_sort
   let i = 1, j = 1
   while (i < extendedBarArr.length) {
     await tween(j, i, setIdxJ, DURATION).promise()
     j = i
     while (j > 0 && extendedBarArr[j - 1].value > extendedBarArr[j].value) {
+      beepA(1)
       await Promise.all([
         tween(getX(j), getX(j-1), extendedBarArr[j].refSetX.current, DURATION).promise(),
         tween(getX(j-1), getX(j), extendedBarArr[j-1].refSetX.current, DURATION).promise(),
@@ -41,6 +46,7 @@ const sort = async (extendedBarArr: IExtendedBar[], setIdxI: TSetIdx, setIdxJ: T
       await tween(j, j-1, setIdxJ, DURATION).promise()
       j = j - 1
     }
+    beepB(1)
     await tween(i, i+1, setIdxI, DURATION).promise()
     i = i + 1
   }
