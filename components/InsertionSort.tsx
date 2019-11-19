@@ -2,6 +2,25 @@ import { range, shuffle, uniqueId } from 'lodash'
 import { useState, FC, SetStateAction, Dispatch, memo, useRef, MutableRefObject, useEffect } from 'react'
 import { tween } from 'tweening-js'
 import browserBeep from 'browser-beep'
+import Button from '@material-ui/core/Button'
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import IconShuffle from '@material-ui/icons/Shuffle'
+import IconSort from '@material-ui/icons/Sort'
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    button: {
+      margin: theme.spacing(1),
+    },
+    buttonSort: {
+      color: 'black',
+      backgroundColor: '#90caf9',
+      '&:hover': {
+        backgroundColor: 'rgb(100, 141, 174)',
+      }
+    },
+  }),
+)
 
 type TSetIdx = Dispatch<SetStateAction<number>>
 type TSetX = Dispatch<SetStateAction<number>>
@@ -133,6 +152,8 @@ export default () => {
     setIsRunning(false)
   }
 
+  const classes = useStyles({})
+
   return (
     <div>
       <MemorizedBoard arr={arr} refExtendedBarArr={refExtendedBarArr}/>
@@ -140,9 +161,27 @@ export default () => {
       <div className='index j' style={{ transform: `translateX(${getX(idxJ)}px)`}}>j</div>
 
       <div className='buttonBox'>
-        { !isRunning && <button onClick={handleShuffle}>shuffle</button>}
-        { !isRunning && <button onClick={handleSort}>sort</button>}
-        { isRunning && <div className='running'>Running...</div>}
+        <Button
+          variant="contained"
+          color="default"
+          disabled={isRunning}
+          className={classes.button}
+          startIcon={<IconShuffle />}
+          onClick={handleShuffle}
+        >
+          Shuffle
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={isRunning}
+          className={classes.buttonSort}
+          startIcon={<IconSort />}
+          onClick={handleSort}
+        >
+          Sort
+        </Button>
+
       </div>
 
       <style jsx>{`
