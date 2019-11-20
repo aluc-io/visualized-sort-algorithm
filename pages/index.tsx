@@ -15,16 +15,21 @@ const Home = () => (
     </div>
 
     <style jsx>{`
+      :global(body) {
+        background-color: #121212;
+      }
       .hero {
         width: 100%;
         color: #333;
       }
       .title {
-        margin: 0;
         width: 100%;
-        padding-top: 80px;
         line-height: 1.15;
         font-size: 48px;
+        font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+        margin: 0;
+        margin-bottom: 100px;
+        color: white;
       }
       .title,
       .description {

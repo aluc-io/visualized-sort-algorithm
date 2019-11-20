@@ -90,7 +90,7 @@ const Bar: FC<IPropsBar> = (props) => {
         .bar {
           position: absolute;
           width: 20px;
-          background-color: black;
+          background-color: white;
         }
       `}</style>
     </>
@@ -122,7 +122,7 @@ const Board: FC<IPropsBoard> = (props) => {
         .board {
           width: 100%;
           height: 200px;
-          background-color: green;
+          background-color: #333;
           color: white;
           transform: rotateX(180deg);
         }
@@ -156,6 +156,7 @@ export default () => {
 
   return (
     <div>
+      <h3>Insertion Sort</h3>
       <MemorizedBoard arr={arr} refExtendedBarArr={refExtendedBarArr}/>
       <div className='index i' style={{ transform: `translateX(${getX(idxI)}px)`}}>i</div>
       <div className='index j' style={{ transform: `translateX(${getX(idxJ)}px)`}}>j</div>
@@ -185,10 +186,15 @@ export default () => {
       </div>
 
       <style jsx>{`
+        h3 {
+          font-size: 24px;
+          font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+          margin: 0px;
+          color: white;
+        }
         .buttonBox {
           width: 100%;
           height: 60px;
-          background-color: gray;
           text-align: right;
         }
         button {
