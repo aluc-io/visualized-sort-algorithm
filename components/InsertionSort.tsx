@@ -6,6 +6,16 @@ import Button from '@material-ui/core/Button'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import IconShuffle from '@material-ui/icons/Shuffle'
 import IconSort from '@material-ui/icons/Sort'
+import getColorMap from 'colormap'
+
+const colorMapNameArr = [
+  "jet", "hsv", "hot", "cool", "spring", "summer", "autumn", "winter", "bone", "copper",
+  "greys", "yignbu", "greens", "yiorrd", "bluered", "rdbu", "picnic", "rainbow", "portland",
+  "blackbody", "earth", "electric", "alpha", "viridis", "inferno", "magma", "plasma",
+  "warm", "cool", "rainbow-soft", "bathymetry", "cdom", "chlorophyll", "density",
+  "freesurface-blue", "freesurface-red", "oxygen", "par", "phase", "salinity", "temperature",
+  "turbidity", "velocity-blue", "velocity-green", "cubehelix",
+]
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -75,12 +85,17 @@ interface IPropsBar {
   value: number
   idx: number
   refSetX: MutableRefObject<TSetX>
+  colorArr: string[]
 }
 
 const Bar: FC<IPropsBar> = (props) => {
-  const { value, idx, refSetX } = props
+  const { value, idx, refSetX, colorArr } = props
   const [x, setX] = useState(getX(idx))
-  const style = { height: value * 10, transform: `translateX(${x}px)` }
+  const style = {
+    height: value * 10,
+    transform: `translateX(${x}px)`,
+    backgroundColor: colorArr[value-1],
+  }
   refSetX.current = setX
 
   return (
@@ -90,7 +105,6 @@ const Bar: FC<IPropsBar> = (props) => {
         .bar {
           position: absolute;
           width: 20px;
-          background-color: white;
         }
       `}</style>
     </>
@@ -113,10 +127,20 @@ const Board: FC<IPropsBoard> = (props) => {
     refExtendedBarArr.current = extendedBarArr
   }, [arr])
 
+  const colorMapIdx = Math.floor(Math.random() * colorMapNameArr.length)
+  const colormap = colorMapNameArr[colorMapIdx]
+  const colorArr = getColorMap({ colormap, nshades: arr.length, format: 'hex', alpha: 1 })
+
   return (
     <div className='board'>
       {extendedBarArr.map((item, i) => {
-        return <Bar key={`${uniqueId('set')}:${i}`} value={item.value} idx={i} refSetX={item.refSetX}/>
+        return (
+          <Bar
+            key={`${uniqueId('set')}:${i}`}
+            value={item.value} idx={i} refSetX={item.refSetX}
+            colorArr={colorArr}
+          />
+        )
       })}
       <style jsx>{`
         .board {
