@@ -36,8 +36,8 @@ type TSetIdx = Dispatch<SetStateAction<number>>
 type TSetX = Dispatch<SetStateAction<number>>
 
 const DURATION = 50
-const SIZE = 15
-const BAR_WIDTH = 20
+const SIZE = 50
+const BAR_WIDTH = 18
 const BAR_MARGIN = 2
 
 const getArr = () => shuffle(range(1,SIZE+1))
@@ -104,7 +104,7 @@ const Bar: FC<IPropsBar> = (props) => {
       <style jsx>{`
         .bar {
           position: absolute;
-          width: 20px;
+          width: ${BAR_WIDTH}px;
         }
       `}</style>
     </>
@@ -145,10 +145,12 @@ const Board: FC<IPropsBoard> = (props) => {
       <style jsx>{`
         .board {
           width: 100%;
-          height: 200px;
+          height: 520px;
           background-color: #333;
           color: white;
           transform: rotateX(180deg);
+          padding: 0px 10px 0px 10px;
+          box-sizing: border-box;
         }
       `}</style>
     </div>
@@ -179,11 +181,13 @@ export default () => {
   const classes = useStyles({})
 
   return (
-    <div>
+    <div className='container'>
       <h3>Insertion Sort</h3>
       <MemorizedBoard arr={arr} refExtendedBarArr={refExtendedBarArr}/>
-      <div className='index i' style={{ transform: `translateX(${getX(idxI)}px)`}}>i</div>
-      <div className='index j' style={{ transform: `translateX(${getX(idxJ)}px)`}}>j</div>
+      <div className='indexBox'>
+        <div className='index i' style={{ transform: `translateX(${getX(idxI)}px)`}}>i</div>
+        <div className='index j' style={{ transform: `translateX(${getX(idxJ)}px)`}}>j</div>
+      </div>
 
       <div className='buttonBox'>
         <Button
@@ -210,11 +214,20 @@ export default () => {
       </div>
 
       <style jsx>{`
+        .container {
+          padding: 32px;
+        }
+        .indexBox {
+          color: white;
+          padding: 0px 10px 0px 10px;
+          box-sizing: border-box;
+        }
         h3 {
           font-size: 24px;
           font-family: "Roboto", "Helvetica", "Arial", sans-serif;
           margin: 0px;
           color: white;
+          margin: 10px 0px;
         }
         .buttonBox {
           width: 100%;
@@ -231,14 +244,10 @@ export default () => {
           position: absolute;
           width: 20px;
           opacity: 0.8;
+          text-align: center;
         }
         .index.j {
-          background-color: blue;
-          color: white;
-        }
-        .index.i {
-          background-color: yellow;
-          color: black;
+          margin-top: 20px;
         }
       `}</style>
 
